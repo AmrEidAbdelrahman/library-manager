@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    image: ${COMPOSE_PROJECT_NAME:-library_management}_web
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=1
+      - DJANGO_SETTINGS_MODULE=library_management.settings
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/library_db
+    depends_on:
+      - db
+      - mailhog
+      - redis
+
+  db:
+    image: postgis/postgis:15-3.4
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=library_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"  # SMTP server
+      - "8025:8025"  # Web interface
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  celery_worker:
+    image: ${COMPOSE_PROJECT_NAME:-library_management}_web
+    command: celery -A library_management worker -l INFO
+    volumes:
+      - .:/app
+    environment:
+      - DEBUG=1
+      - DJANGO_SETTINGS_MODULE=library_management.settings
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/library_db
+    depends_on:
+      - db
+      - redis
+
+  celery_beat:
+    image: ${COMPOSE_PROJECT_NAME:-library_management}_web
+    command: celery -A library_management beat -l INFO
+    volumes:
+      - .:/app
+    environment:
+      - DEBUG=1
+      - DJANGO_SETTINGS_MODULE=library_management.settings
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/library_db
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  postgres_data: 
