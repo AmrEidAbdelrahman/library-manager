@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.contrib.gis.db import models as gis_models
 
 class User(AbstractUser):
     """
@@ -9,6 +10,7 @@ class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     phone_number = models.CharField(_('phone number'), max_length=15, blank=True)
     address = models.TextField(_('address'), blank=True)
+    location = gis_models.PointField(_('location'), geography=True, null=True, blank=True)
     is_verified = models.BooleanField(_('verified'), default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -22,4 +24,4 @@ class User(AbstractUser):
         verbose_name_plural = _('users')
 
     def __str__(self):
-        return self.email
+        return self.email 

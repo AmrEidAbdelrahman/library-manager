@@ -35,5 +35,8 @@ urlpatterns = [
     # Password reset URLs
     path('accounts/password/reset/<uidb64>/<token>/', 
          auth_views.PasswordResetConfirmView.as_view(), 
-         name='password_reset_confirm')
+         name='password_reset_confirm'),
+
+    # Include the core_manager app URLs
+    path('api/', include('core_manager.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
