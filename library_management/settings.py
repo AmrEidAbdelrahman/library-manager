@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'dj_rest_auth',
     'dj_rest_auth.registration',
     'rest_framework.authtoken',
+    'rest_framework_simplejwt.token_blacklist',
     'django_filters',
     'corsheaders',
     'channels',
@@ -91,6 +92,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'django_ratelimit.middleware.RatelimitMiddleware',
+
 ]
 
 ROOT_URLCONF = 'library_management.urls'
@@ -186,6 +189,14 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10,
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '5/minute',
+        'user': '5/minute',
+    }
 }
 
 # JWT settings
@@ -277,6 +288,9 @@ DJREST_AUTH_TOKEN_MODEL = None
 DJREST_AUTH_LOGOUT_ON_LOGOUT = True
 SIMPLE_JWT["BLACKLIST_AFTER_ROTATION"] = True
 
-INSTALLED_APPS += [
-    'rest_framework_simplejwt.token_blacklist',
-]
+
+
+# RATELIMIT_VIEW = 'django_ratelimit.views.ratelimited'
+# RATELIMIT_BLOCK = True
+# RATELIMIT_KEY = 'ip'
+# RATELIMIT_RATE = '5/m'
