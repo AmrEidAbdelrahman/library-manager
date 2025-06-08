@@ -13,3 +13,5 @@ redis==5.0.1
 requests
 pillow
 django-filter
+channels_redis
+django-celery-beat

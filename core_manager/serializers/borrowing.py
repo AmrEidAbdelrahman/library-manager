@@ -35,6 +35,7 @@ class BorrowingCreateSerializer(serializers.Serializer):
 
     def validate_book_ids(self, value):
         """Validate that the book is available for borrowing"""
+        print("Validating book IDs:", value)
         books = Book.objects.filter(id__in=value, available_copies__gt=0)
         if len(books) != len(value):
             return serializers.ValidationError({

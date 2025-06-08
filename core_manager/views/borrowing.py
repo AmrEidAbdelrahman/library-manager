@@ -26,8 +26,11 @@ class BorrowingViewSet(viewsets.ModelViewSet):
         try:
             book_ids = request.data.get('book_ids', [])
             days = int(request.data.get('days', BorrowingService.DEFAULT_MAX_BORROWING_DAYS))
-
-            serializer = BorrowingCreateSerializer(data=request.data, many=True, context={'request': request})
+            data = {
+                'book_ids': book_ids,
+                'days': days
+            }
+            serializer = BorrowingCreateSerializer(data=data, context={'request': request})
             if not serializer.is_valid():
                 return Response(
                     serializer.errors,

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #f8f9fa; padding: 20px; text-align: center; }
+        .content { padding: 20px; }
+        .footer { text-align: center; padding: 20px; font-size: 12px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Book Borrowing Confirmation</h2>
+        </div>
+        <div class="content">
+            <p>Dear {{ user.get_full_name|default:user.email }},</p>
+            
+            <p>Your book borrowing has been confirmed:</p>
+            
+            <h3>Borrowed Books:</h3>
+            <ul>
+            {% for borrowing in borrowings %}
+                <li>
+                    <strong>{{ borrowing.book.title }}</strong><br>
+                    Due Date: {{ borrowing.due_date|date:"F j, Y" }}
+                </li>
+            {% endfor %}
+            </ul>
+
+            <p>Please return the books by their due dates to avoid any late fees.</p>
+            
+            <p>Thank you for using our library service!</p>
+        </div>
+        <div class="footer">
+            <p>This is an automated message, please do not reply.</p>
+        </div>
+    </div>
+</body>
+</html> 

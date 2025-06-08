@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     'django_filters',
     'corsheaders',
     'channels',
+    'django_celery_beat',
     'requests',
     
     # Local apps
@@ -229,6 +230,13 @@ CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutes
 
+CELERY_BEAT_SCHEDULE = {
+    'send_return_reminders': {
+        'task': 'core_manager.tasks.check_due_books',
+        'schedule': timedelta(days=1),
+        'args': (),
+    }
+}
 
 # Channels settings
 CHANNEL_LAYERS = {

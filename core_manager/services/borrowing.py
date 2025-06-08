@@ -4,6 +4,8 @@ from typing import List, Tuple
 
 from core_manager.models.borrowing import Borrowing
 from ..models import Book, User
+from .notification import NotificationService
+from ..tasks import send_borrowing_confirmation
 
 class BorrowingService:
     MAX_ACTIVE_BORROWINGS = 3
@@ -161,9 +163,13 @@ class BorrowingService:
             # Update book availability
             book.available_copies -= 1
             book.save()
-        
+
         # Save borrowings
         Borrowing.objects.bulk_create(borrowings)
+
+        # Send confirmation email asynchronously
+        send_borrowing_confirmation.delay([b.id for b in borrowings])
+
         return borrowings
 
     @staticmethod
@@ -198,6 +204,9 @@ class BorrowingService:
             book = borrowing.book
             book.available_copies += 1
             book.save()
+
+            # Notify that book is available
+            NotificationService.notify_book_available(book)
 
             updated_borrowings.append(borrowing)
 
